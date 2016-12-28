@@ -1,27 +1,27 @@
 clear;	
 load('COIL20.mat');
-nClass = length(unique(gnd));%ÔònClassÎª20
+nClass = length(unique(gnd));%åˆ™nClassä¸º20
 
 %Normalize each data vector to have L2-norm equal to 1 
-%¶ÔÓÚCOIL20.matÖĞµÄfeaÎªÒ»¸ö1440*1024µÄ¾ØÕó£¬ÆäÖĞÃ¿Ò»ĞĞÎªÒ»¸öÊı¾İ£¬Ã¿Ò»ÁĞÎªÒ»¸öfeature£¬ËùÒÔµ±×÷ÎÒÃÇµÄº¯ÊıÖĞµÄX£¬feaĞèÒªÏÈ×ªÖÃ
-%¶ÔÓÚµÚÒ»´Î£¬ÏÈÁîbeltaÎª0£¬²»¿¼ÂÇL¾ØÕó£¬ÔòL¾ØÕóËæÒârandÒ»¸öM*MµÄ£¬£¨MÎª1440£©
-%·µ»Ø×Ô¼ºËùÕÒµÄĞÂlamdaÖ®ºó£¬ÓÃĞÂµÄlamdaÖĞÕÒ×î´óµÄÇ°100¸ö×÷ÎªXËùÑ¡È¡µÄfeature£¬È¡ÕâĞ©ÁĞ×÷ÎªËùÒªÑ¡È¡µÄXµÄÁĞ£¬¹¹³ÉÒ»¸öĞÂµÄ1440*100µÄ¾ØÕó£¬ĞÎ³ÉĞÂµÄfea,ÊäÈëµ½ÏÂÃæµÄNormalizeFeaÖĞ¡£
+%å¯¹äºCOIL20.matä¸­çš„feaä¸ºä¸€ä¸ª1440*1024çš„çŸ©é˜µï¼Œå…¶ä¸­æ¯ä¸€è¡Œä¸ºä¸€ä¸ªæ•°æ®ï¼Œæ¯ä¸€åˆ—ä¸ºä¸€ä¸ªfeatureï¼Œæ‰€ä»¥å½“ä½œæˆ‘ä»¬çš„å‡½æ•°ä¸­çš„Xï¼Œfeaéœ€è¦å…ˆè½¬ç½®
+%å¯¹äºç¬¬ä¸€æ¬¡ï¼Œå…ˆä»¤beltaä¸º0ï¼Œä¸è€ƒè™‘LçŸ©é˜µï¼Œåˆ™LçŸ©é˜µéšæ„randä¸€ä¸ªM*Mçš„ï¼Œï¼ˆMä¸º1440ï¼‰
+%è¿”å›è‡ªå·±æ‰€æ‰¾çš„æ–°lamdaä¹‹åï¼Œç”¨æ–°çš„lamdaä¸­æ‰¾æœ€å¤§çš„å‰100ä¸ªä½œä¸ºXæ‰€é€‰å–çš„featureï¼Œå–è¿™äº›åˆ—ä½œä¸ºæ‰€è¦é€‰å–çš„Xçš„åˆ—ï¼Œæ„æˆä¸€ä¸ªæ–°çš„1440*100çš„çŸ©é˜µï¼Œå½¢æˆæ–°çš„fea,è¾“å…¥åˆ°ä¸‹é¢çš„NormalizeFeaä¸­ã€‚
 L = zeros(1440,1440);
 alpha = 1;
-belta = 0;%ÏÈ²»¿¼ÂÇÀ­ÆÕÀ­Ë¹¾ØÕó
-epsilon = 0.1;%Öğ½¥µ÷ÕûepsilonµÄÖµ
+belta = 0;%å…ˆä¸è€ƒè™‘æ‹‰æ™®æ‹‰æ–¯çŸ©é˜µ
+epsilon = 0.1;%é€æ¸è°ƒæ•´epsilonçš„å€¼
 lamda_last = mlt_main_function(fea',L,alpha,belta,epsilon);
 
-%ÔÚÇó³ölamda_newÖ®ºó£¬ÒªÔÚlamda_newµÄ¶Ô½ÇÏßÔªËØÉÏÃæÕÒ×î´óµÄÔªËØ£¬×÷ÎªËùÑ¡ÔñµÄfeatureµÄ´úºÅ
-%ÏÈ°Ñlamda_lastÖĞµÄ¶Ô½ÇÏßÔªËØÅÅÁĞ³ÉĞĞÏòÁ¿
+%åœ¨æ±‚å‡ºlamda_newä¹‹åï¼Œè¦åœ¨lamda_newçš„å¯¹è§’çº¿å…ƒç´ ä¸Šé¢æ‰¾æœ€å¤§çš„å…ƒç´ ï¼Œä½œä¸ºæ‰€é€‰æ‹©çš„featureçš„ä»£å·
+%å…ˆæŠŠlamda_lastä¸­çš„å¯¹è§’çº¿å…ƒç´ æ’åˆ—æˆè¡Œå‘é‡
 lamda_last_row = zeros(1,1024);
 for i = 1:1024
 lamda_last_row(1,i) = lamda_last(i,i);
 end
 
-%È»ºóÌô³ölamda_last_rowÖĞ×î´óµÄÇ°100¸öÔªËØ£¬ÏÈ¶ÔÓÚlamda_row_last_rowÉıĞòÅÅĞò£¬²¢±£ÁôÆäÔ­Ê¼ĞòºÅÔÚindÏòÁ¿ÖĞ£¬ÔÚÕÒ×î´ó£¨¼´¿¿ºó£©µÄ100¸öĞòºÅ
+%ç„¶åæŒ‘å‡ºlamda_last_rowä¸­æœ€å¤§çš„å‰100ä¸ªå…ƒç´ ï¼Œå…ˆå¯¹äºlamda_row_last_rowå‡åºæ’åºï¼Œå¹¶ä¿ç•™å…¶åŸå§‹åºå·åœ¨indå‘é‡ä¸­ï¼Œåœ¨æ‰¾æœ€å¤§ï¼ˆå³é åï¼‰çš„100ä¸ªåºå·
 [lamda_last_row_sort,ind] = sort(lamda_last_row);
-%È»ºóÕÒ³öindµÄºó100Î»µÄÖµ×÷ÎªfeaËùÒªÑ¡È¡µÄÁĞ£¬°ÑÕâĞ©ÁĞÈ¡³ö·ÅÈëÒ»¸öĞÂ¾ØÕó£¬¹¹³ÉĞÂµÄfea
+%ç„¶åæ‰¾å‡ºindçš„å100ä½çš„å€¼ä½œä¸ºfeaæ‰€è¦é€‰å–çš„åˆ—ï¼ŒæŠŠè¿™äº›åˆ—å–å‡ºæ”¾å…¥ä¸€ä¸ªæ–°çŸ©é˜µï¼Œæ„æˆæ–°çš„fea
 fea_new = zeros(1440,100);
 for r=1:100
     fea_new(:,ind(end-r+1)) = fea(:,ind(end-r+1));
@@ -34,4 +34,4 @@ disp(fea_new);
 rand('twister',5489);
 label = litekmeans(fea_new,nClass,'Replicates',10);
 MIhat = MutualInfo(gnd,label);
-disp(['kmeans use all the features. MIhat: ',num2str(MIhat)]);
+disp(['kmeans use some of the features. MIhat: ',num2str(MIhat)]);
