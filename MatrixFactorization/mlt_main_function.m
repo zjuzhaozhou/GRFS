@@ -1,15 +1,15 @@
-function lamda_last = mlt_main_function(X,L,alpha,belta,epsilon) %ÉèÖÃ×îÖÕÍË³öµü´úÑ­»·µÄÌõ¼şÏµÊıÎªepsilon,LÎªM*M¾ØÕó
-%Ö÷º¯ÊıÍê³ÉlamdaÓëAµÄ¸üĞÂ£¬×îÖÕ½«lamdaµÄ×îÖÕÖµ´«³ö
-[N,M] = size(X);%XµÄĞĞÊı´ú±ífeatrueµÄ¸öÊı£¬XµÄÁĞÊı´ú±íXµÄÊı¾İ¸öÊı
-A_0 = rand(N,N); %AµÄĞĞÁĞÎ¬ÊıÎªXµÄfeatureÊıÄ¿,AÎªN*NµÄÃ¿¸öÔªËØÖµ¾ùÎª½éÓÚ0¡¢1Ö®¼äµÄÒ»¸öN½×¾ØÕó
+function lamda_last = mlt_main_function(X,L,alpha,belta,epsilon) 
+
+[N,M] = size(X);
+A_0 = rand(N,N); 
 lamda_0 = rand_lamda(N);
 
 lamda_new = mlt_lamda_update(X,L,A_0,lamda_0,alpha,belta);
-A_new = A_0;%³õÊ¼»¯A_new×÷ÎªÏÂÃæµÄÑ­»·µÄ³õÊ¼Ìõ¼ş
+A_new = A_0;
 lamda_minus = lamda_new - lamda_0;
 lamda_distance = norm(lamda_minus,'fro');
 
-%Ñ­»·¸üĞÂlamda¼°A£¬Ö±µ½lamda_distanceĞ¡ÓÚepsilon
+
 while lamda_distance >= epsilon
     lamda_old = lamda_new;
     lamda_new = mlt_lamda_update(X,L,A_new,lamda_old,alpha,belta);
@@ -27,7 +27,7 @@ function lamda_0 = rand_lamda(N)
 lamda_rand_arrow = rand(N,1);
 lamda_0 = zeros(N);
 for i=1:N
-    lamda_0(i,i) = lamda_rand_arrow(i,1);%lamdaÎª¶Ô½Ç¾ØÕó£¬¶Ô½ÇÏßÉÏµÄÔªËØÎª½éÓÚ0¡¢1Ö®¼äµÄÖµ
+    lamda_0(i,i) = lamda_rand_arrow(i,1);%lamdaä¸ºå¯¹è§’çŸ©é˜µï¼Œå¯¹è§’çº¿ä¸Šçš„å…ƒç´ ä¸ºä»‹äº0ã€1ä¹‹é—´çš„å€¼
 end
 disp(lamda_0);
 end
