@@ -1,23 +1,19 @@
 function lamda_new = mlt_lamda_update_new(X,L,A,lamda_old,alpha,belta,o)
-%Ñ­»·¼ÆËãº¯ÊıÌİ¶Ègradient£¬£¨º¯ÊıÎªsigma(sigma(x_kj - sigma(lamda_i * a_ik * x_ij))^2) + alpha * |lamda_p| + belta * sigma(Y_pp *  lamda_p * lamda_p)£©
-%²¢ÇÒ¸ù¾İÌİ¶ÈµÄ¼ÆËãÖµ£¬ÕÒ³öÌİ¶È×î´óµÄlamdaÖµ£¨lamda_p£©£¬½øĞĞ¸üĞÂ£¬½«lamda_p_new = (sigma(sigma(a_pk^2 * x_pj^2)) + belta * Y_pp)^-1 * £¨sigma(sigma(r_jk * a_pk * x_pj)) - alpha*thelta_p/2£©
-%n´ú±íËùÒªÑ¡È¡µÄfeatureµÄ×ÜÊı,XÎªÔ­Ê¼Êı¾İ¾ØÕó£¬LÎªÀ­ÆÕÀ­Ë¹¾ØÕó
-%new_lamda = zeros(n,1);
-[N,M] = size(X);%XµÄĞĞÊı´ú±ífeatrueµÄ¸öÊı£¬XµÄÁĞÊı´ú±íXµÄÊı¾İ¸öÊı
-lamda_new = lamda_old; %lamda_new´ú±íÃ¿´Î¸üĞÂÖ®ºóµÄlamda¾ØÕó
+
+[N,M] = size(X);
+lamda_new = lamda_old; 
 Y = X * L * X';
 
-%¶ÔÓÚA_i_X_iºÍlamda_i_A_i_X_i¾ØÕóÏòÁ¿µÄÇó½â£¬ÒòÎªAºÍX,lamda¶¼ÊÇ¹Ì¶¨µÄ£¬ËùÒÔ·ÅÔÚmlt_lamda_updateº¯ÊıÖĞ£¬²¢°Ñ½á¹û´«Èëmlt_gradientcaluº¯ÊıÖĞ£¬¶ø²»ÓÃÃ¿´Î¶¼ÖØ¸´¼ÆËãÁË,
-%ÆäÖĞA_i_X_i·ÅÔÚfor zÑ­»·µÄÍâÃæ£¬¶ø²»ÓÃÃ¿´Î¶¼ÒªÔÚ¸üĞÂÌİ¶ÈºóÔÙ´Î¼ÆËãÒ»±é£¬ÇÒlamda_i_A_i_X_iµÄÃ¿Ò»¸öÔªËØÒ²Ö»ĞèÒªÓÃlamda_new(i,i) * A_i_X_i{1,i}£¬¶ø²»ÓÃÔÙËãÒ»±éX(i,:)'*A(i,:)
-A_i_X_i = cell(1,N);%´´½¨¿ÕµÄÔªÏ¸°ûÊı×é£¬À´´æ´¢N¸ö¾ØÕó£¬£¨XµÄµÚiĞĞµÄ×ªÖÃÓëAµÄµÚiĞĞÏà³ËËùµÃµÄM*N¾ØÕó£©
+
+A_i_X_i = cell(1,N);
 for i=1:N
     A_i_X_i{1,i}= X(i,:)' * A(i,:);
 end
 
-%¶ÔÓÚºóÃæ¸üĞÂ¾ßÓĞ×î´óÌİ¶ÈµÄlamdaÖĞ£¬sigma(a_pk * x_pj)^2Ò²¿ÉÒÔÌáÇ°´æÈë¾ØÕóÖĞ£¬´æ1*1024Î¬¾ØÕóÖĞ£¬¾ØÕóÔªËØ·Ö±ğ¶ÔÓ¦ÓÚÃ¿Ò»¸ölamda_pµÄsigma(sigma(a_pk^2 * x_pj^2)) + belta * Y_pp
+
 sigma_a_pk_x_pj_square = zeros(1,N);
 for p=1:N
-    sigma_a_pk_x_pj = belta*Y(p,p);%´Ë´¦Çóbelta * Y_pp
+    sigma_a_pk_x_pj = belta*Y(p,p);
     for j = 1:M
         for k = 1:N
             sigma_a_pk_x_pj = sigma_a_pk_x_pj + A_i_X_i{1,p}(j,k)^2;
@@ -26,20 +22,18 @@ for p=1:N
     sigma_a_pk_x_pj_square(1,p) = sigma_a_pk_x_pj;
 end
 
-lamda_i_A_i_X_i = cell(1,N);%´´½¨¿ÕµÄÔªÏ¸°ûÊı×é£¬À´´æ´¢N¸ö¾ØÕó£¬£¨XµÄµÚiĞĞµÄ×ªÖÃÓëAµÄµÚiĞĞÏà³ËËùµÃµÄ¾ØÕó£¬ÔÙÓëlamda_iÕâ¸öÊı£¨¼´lamda_new(i,i)£©Ïà³ËËùµÃM*N¾ØÕó£©
+lamda_i_A_i_X_i = cell(1,N);
 fprintf('Now we are calulating lamda_i_A_i_X_i\n');
 for i=1:N
     lamda_i_A_i_X_i{1,i} = lamda_old(i,i) * A_i_X_i{1,i};
 end
 
-%¶ÔÓÚsigma(lamda_i * a_i_k * x_i_j)(i=1~N) (¹²M*N¸ö)Òª´æ´¢ÆğÀ´£¬´æ´¢ÎªÒ»¸ö¾ØÕó£¬
-%Ôò¼ÆËã¶ÔÓÚÃ¿¸ölamda_pµÄÌİ¶ÈÊ±£¬¿ÉÒÔÖ±½ÓÈ¡³öÖµ£¬£¨¼´¾ØÕóµÄµÚk,jºÅÔªËØ£©£¬¶ø²»ÓÃÃ¿´ÎÇó¹ØÓÚ²»Í¬lamda_pµÄÌİ¶ÈÊ±£¬¶¼ÒªÖØĞÂÇóÒ»±éÖµ
-%´Ë´¦ÇóÊÇÎªÁËz=1Ê±µÄlamdaÌİ¶È¼ÆËã½øĞĞÇó½âµÄ
+
 fprintf('Now we are calulating x_kj_minus_sigma_lamda_A_ik_X_ij\n');
-x_kj_minus_sigma_lamda_A_ik_X_ij = zeros(N,M); %ÓÃÀ´´æ´¢x_ij - sigma(lamda_i * a_i_k * x_i_j)
+x_kj_minus_sigma_lamda_A_ik_X_ij = zeros(N,M); 
 for j = 1:M
     for k = 1:N
-        r_kj = X(k,j);%r_kj¼´ÎªÂÛÎÄÖĞµÄx_kj - sigma(lamda_i * a_i_k * x_i_j),Ã»ÓĞÈ¥³ılamda_p * a_pk * x_pj
+        r_kj = X(k,j);
         for i=1:N
             r_kj = r_kj - lamda_i_A_i_X_i{1,i}(j,k);
         end
@@ -47,59 +41,57 @@ for j = 1:M
     end
 end
 
-p = 0;%³õÊ¼»¯p£¬Ê¹p²»»áÔÚÃ¿Ò»´ÎwhileÑ­»·ºó¶¼±»Ä¨È¥
+p = 0;
 
 for z = 1:100
-    %µü´ú100´Î£¬Ã¿´ÎÑ¡È¡×î´óµÄÌİ¶È×î´óµÄlamdaÀ´½øĞĞ¸üĞÂ
-    lamda_old = lamda_new;%À´ÈÃÉÏ´ÎÑ­»·µÄlamda_new¸³ÖµÎªÕâ´ÎµÄlamda_old
-    % lamda_i_A_i_X_i = cell(1,N);%´´½¨¿ÕµÄÔªÏ¸°ûÊı×é£¬À´´æ´¢N¸ö¾ØÕó£¬£¨XµÄµÚiĞĞµÄ×ªÖÃÓëAµÄµÚiĞĞÏà³ËËùµÃµÄ¾ØÕó£¬ÔÙÓëlamda_iÕâ¸öÊı£¨¼´lamda_new(i,i)£©Ïà³ËËùµÃM*N¾ØÕó£©
+    
+    lamda_old = lamda_new;
+    % lamda_i_A_i_X_i = cell(1,N);
     fprintf('Now we are calulating lamda_i_A_i_X_i\n');
-    %Ã¿´ÎÑ­»·½ö½ö¸üĞÂÁËÒ»¸ölamda_p,ÆäÓàlamda¶¼Ã»ÓĞ±ä£¬ËùÒÔ¿ÉÒÔ½ö½ö½«ÉÏÒ»´Î¼ÆËã³öµÄlamda_i_A_i_X_iÕâ¸öÔªÏ¸°ûÊı×éµÄlamda_i_A_i_X_i{1,p}ÔªËØ½øĞĞ¸Ä±ä£¬¶ø²»ÓÃÔÙ´Î½«ËùÓĞ¶¼ÖØĞÂ¼ÆËãÒ»±é
+    
     % for i=1:N
         % lamda_i_A_i_X_i{1,i} = lamda_new(i,i) * A_i_X_i{1,i};
     % end
     if z ~= 1
-        lamda_i_A_i_X_i{1,p} = lamda_old(p,p) * A_i_X_i{1,p}; %½ö½ö½«ÉÏÒ»´Î¼ÆËã³öµÄlamda_i_A_i_X_iÕâ¸öÔªÏ¸°ûÊı×éµÄlamda_i_A_i_X_i{1,p}ÔªËØ½øĞĞ¸Ä±ä£¬¶ø²»ÓÃÔÙ´Î½«ËùÓĞ¶¼ÖØĞÂ¼ÆËãÒ»±é
+        lamda_i_A_i_X_i{1,p} = lamda_old(p,p) * A_i_X_i{1,p}; 
     end
     
-    %¶ÔÓÚsigma(lamda_i * a_i_k * x_i_j)(i=1~N) (¹²M*N¸ö)Òª´æ´¢ÆğÀ´£¬´æ´¢ÎªÒ»¸ö¾ØÕó£¬
-    %Ôò¼ÆËã¶ÔÓÚÃ¿¸ölamda_pµÄÌİ¶ÈÊ±£¬¿ÉÒÔÖ±½ÓÈ¡³öÖµ£¬£¨¼´¾ØÕóµÄµÚk,jºÅÔªËØ£©£¬¶ø²»ÓÃÃ¿´ÎÇó¹ØÓÚ²»Í¬lamda_pµÄÌİ¶ÈÊ±£¬¶¼ÒªÖØĞÂÇóÒ»±éÖµ
+    
     fprintf('Now we are calulating x_kj_minus_sigma_lamda_A_ik_X_ij\n');
-    %ÓëÉÏÃæÇólamda_i_A_i_X_iÊ±ÏàÍ¬£¬´ËÊ±½ö½öÒ»¸ölamdaÔÚÉÏÒ»´ÎµÄzµÄÑ­»·ÖĞÓĞËù¸Ä±ä£¬ËùÒÔ½ö½ö¸Ä±äx_kj_minus_sigma_lamda_A_ik_X_ij¶ÔÓ¦ÓÚlamda_pµÄÖµ¼´¿É£¬¶øx_kj_minus_sigma_lamda_A_ik_X_ij¾ØÕóÆäËûµÄÖµ²»ÓÃ±ä
-    % x_kj_minus_sigma_lamda_A_ik_X_ij = zeros(N,M); %ÓÃÀ´´æ´¢x_ij - sigma(lamda_i * a_i_k * x_i_j)
+    
+    % x_kj_minus_sigma_lamda_A_ik_X_ij = zeros(N,M); 
     % for j = 1:M
         % for k = 1:N
-            % r_kj = X(k,j);%r_kj¼´ÎªÂÛÎÄÖĞµÄx_kj - sigma(lamda_i * a_i_k * x_i_j),Ã»ÓĞÈ¥³ılamda_p * a_pk * x_pj£¬°üÀ¨lamda_p * a_pk * x_ijÒ²±»¼õµôÁË
+            % r_kj = X(k,j);
             % for i=1:N
                 % r_kj = r_kj - lamda_i_A_i_X_i{1,i}(j,k);
             % end
             % x_kj_minus_sigma_lamda_A_ik_X_ij(k,j) = r_kj;
         % end
     % end
-    %ÒòÎªÃ¿´ÎÑ­»·¹ıºó£¬lamda¾ØÕó¶¼»á·¢Éú±ä»¯£¬ËùÒÔx_kj_minus_sigma_lamda_A_ik_X_ij¾ØÕóÖĞµÄÃ¿¸öÖµ¶¼»áÓÉÓÚËùÉÙ¼õÈ¥µÄlamda_p*a_ik_x_ij·¢ÉúÁË±ä»¯¶ø¸Ä±ä£¬ËùÒÔx_kj_minus_sigma_lamda_A_ik_X_ijµÄÃ¿¸öÖµ¶¼Òª¸üĞÂ£¬µ«ÊÇÖĞ¼ä¿ÉÒÔÉÙÒ»¸öforÑ­»·£¨¼´Çór_kj²»ÓÃÔÙÑ­»·¼õÁË£¬¶øÊÇ¿ÉÒÔÏÈ¼ÓÉÏ´ÎµÄlamda_p*a_ik_x_ij£¬ÔÙ¼õÕâ´ÎµÄlamda_p*a_ik_x_ij£©
+    
     if z~=1
         for j = 1:M
             for k = 1:N
-                r_kj = x_kj_minus_sigma_lamda_A_ik_X_ij(k,j);%r_kj¼´ÎªÂÛÎÄÖĞµÄx_kj - sigma(lamda_i * a_i_k * x_i_j),Ã»ÓĞÈ¥³ılamda_p * a_pk * x_pj
+                r_kj = x_kj_minus_sigma_lamda_A_ik_X_ij(k,j);
                 r_kj = r_kj + lamda_p_old_time * A_i_X_i{1,p}(j,k) - lamda_p_new * A_i_X_i{1,p}(j,k);
                 x_kj_minus_sigma_lamda_A_ik_X_ij(k,j) = r_kj;
             end
         end
     end
-    gradient_lamda_p_max = mlt_gradientcalu_new(X,lamda_old,Y,1,A,alpha,belta,M,N,A_i_X_i,x_kj_minus_sigma_lamda_A_ik_X_ij);%ÓÃÀ´ÔİÊ±´æ´¢×î´óµÄµ¼Êı£¬ÓĞ¿ÉÄÜËùÓĞµ¼Êı¾ùÎª±È0Ğ¡µÄ¸ºÊı£¬ÄÇÃ´³õÊ¼ÉèÖÃµÄµ¼Êı¾Í±ØĞëÎª¹ØÓÚlamda_1µÄµ¼Êı£¬ÇÒgradient_lamda_p_max_index³õÊ¼»¯Îª1£¬
-                             %·ÀÖ¹ÏÂÃæ³öÏÖgradient_lamda_p_max_index×îÖÕ¾­¹ıkµÄÑ­»·ºó²»¸üĞÂ£¬(¼´ËùÓĞµÄµ¼Êı¾ù±Ègradient_lamda_p_max³õÊ¼ÖµĞ¡µÄÇé¿ö³öÏÖ)?
-    gradient_lamda_p_max_index = 1;%ÓÃÀ´ÔİÊ±´æ´¢×î´óµÄµ¼ÊıµÄĞòºÅ,³õÊ¼»¯Îª1
+    gradient_lamda_p_max = mlt_gradientcalu_new(X,lamda_old,Y,1,A,alpha,belta,M,N,A_i_X_i,x_kj_minus_sigma_lamda_A_ik_X_ij);
+    gradient_lamda_p_max_index = 1;
     fprintf('Now the time of mlt_lamda_update_new is : %d ;the loop of z in 100 is : %d ; the gradient_lamda_p of p: 1 is %d\n',o,z,gradient_lamda_p_max);
-    for k = 2:N %¶ÔÓÚËùÓĞµÄÌØÕ÷½øĞĞÇóµ¼£¬²¢ÇÒÕÒ³ö×î´óµÄµ¼Êı?
-        gradient_lamda_p = mlt_gradientcalu_new(X,lamda_old,Y,k,A,alpha,belta,M,N,A_i_X_i,x_kj_minus_sigma_lamda_A_ik_X_ij); %gradient_lamda_p´ú±íÃ¿´Î¶ÔÓÚlamda_pÇóµ¼µÄ½á¹û
+    for k = 2:N 
+        gradient_lamda_p = mlt_gradientcalu_new(X,lamda_old,Y,k,A,alpha,belta,M,N,A_i_X_i,x_kj_minus_sigma_lamda_A_ik_X_ij); 
         fprintf('Now the time of mlt_lamda_update_new is : %d ; the loop of z in 100 is : %d ; the gradient_lamda_p of p: %d is %d\n',o,z,k,gradient_lamda_p);
         if gradient_lamda_p_max < gradient_lamda_p
-            %À´ÕÒ³ö×î´óµÄµ¼Êı
+            
             gradient_lamda_p_max = gradient_lamda_p;
             gradient_lamda_p_max_index = k;
         end
     end
-    p = gradient_lamda_p_max_index;%ÔòÓÃpÀ´´ú±í×î´óµ¼ÊıµÄlamdaµÄĞòºÅ
+    p = gradient_lamda_p_max_index;
     if gradient_lamda_p_max > alpha
         thelta_p = -1;
     elseif gradient_lamda_p_max < -(alpha)
@@ -107,58 +99,52 @@ for z = 1:100
     else
         thelta_p = 0; 
     end
-    %¶ÔÓÚ×î´óµÄµ¼Êı¶ÔÓ¦µÄgradient_lamda_p_max_index½øĞĞ¸üĞÂ
-    %ÏÈÇóÇ°ÃæµÄsigma(sigma(a_pk^2 * x_pj^2)) + belta * Y_pp
+    
     sigma_a_pk_x_pj = sigma_a_pk_x_pj_square(1,p);
     
     
-    %ÔÙÇóºóÃæµÄsigma(sigma(r_jk * a_pk * x_pj)) - alpha*thelta_p/2£¬ÒòÎªÃ¿´ÎÑ­»·¹ıºó£¬lamda¾ØÕó¶¼»á·¢Éú±ä»¯£¬ËùÒÔsigma(sigma(r_jk * a_pk * x_pj))¶¼ĞèÒªÖØĞÂ¼ÆËã
+    
     sigma_r_jk_a_pk_x_pj = -((alpha*thelta_p)/2);
     for j = 1:M
         for k = 1:N
-            r_kj = x_kj_minus_sigma_lamda_A_ik_X_ij(k,j) + lamda_old(p,p)*A_i_X_i{1,p}(j,k) ; %x_kj_minus_sigma_lamda_A_ik_X_ij(k,j)½«lamda_p*a_pk*x_pjÒ²¸ø¼õµôÁË£¬ËùÒÔÒªÔÚÇór_kjÊ±ÔÙ¼Ó»ØÀ´
+            r_kj = x_kj_minus_sigma_lamda_A_ik_X_ij(k,j) + lamda_old(p,p)*A_i_X_i{1,p}(j,k) ; 
             sigma_r_jk_a_pk_x_pj = sigma_r_jk_a_pk_x_pj + r_kj*A_i_X_i{1,p}(j,k); 
         end
     end
     lamda_p_new = (sigma_a_pk_x_pj^-1) * sigma_r_jk_a_pk_x_pj;
-    lamda_p_old_time = lamda_old(p,p);%´æ´¢±¾´Î¸üĞÂµÄlamda_pÔÚ¸üĞÂÇ°µÄÖµ£¬ÓÃÀ´ÔÚÏÂÒ»´ÎµÄx_kj_minus_sigma_lamda_A_ik_X_ijµÄÃ¿¸öÔªËØµÄÇó½âÖĞ¼ÓÉÏlamda_p_old_time£¬ÔÙ¼õÈ¥lamda_p_new
+    lamda_p_old_time = lamda_old(p,p);
     lamda_new = lamda_old;
     lamda_new(p,p) = lamda_p_new;
     %new_lamda(p,1) = lamda_p_new;
     for j=1:N
-        if lamda_old(j,j) ~= lamda_new(j,j) && j ~= p %¶ÔÓÚlamdaÖĞµÄÃ¿¸öÖµ½øĞĞ±È¶ÔÈç¹û²»½ö½ö¸Ä±äÁËÒ»¸ölamda(p,p)µÄÖµ£¬Ôò±¨´í£¬¿´¿´µ½µ×ÊÇÄÄ´ÎÈÃËùÓĞlamdaµÄ¶Ô½ÇÔªËØÖµÈ«²¿¸³ÖµÎª0
-        % &&·ûºÅÎª¡°Óë¡±£¬Èç¹ûÇ°ÃæÎª¡°0¡±£¬ÔòÖ±½Ó½«Õû¸öÂß¼­±í´ïÊ½·µ»ØÖµÎª¡°0¡±£¬¶ø²»»áÔÙÇó&&ºóÃæµÄ°ë¸öÂß¼­±í´ïÊ½µÄÖµÁË
+        if lamda_old(j,j) ~= lamda_new(j,j) && j ~= p 
+        
             fprintf('Now the lamda has changed value :%d , and the value has changed not for p: %d . Now the z is :%d\n',j,p,z);
         end
     end
     disp(lamda_new);
     fprintf('Now the time of mlt_lamda_update_new is : %d ; and the loop of all lamda gradient is over. the lamda_new of z: %d is in the up. \n',o,z);
     if lamda_new(p,p) == 0
-        fprintf('Now the time of mlt_lamda_update_new is : %d ; and the loop of all lamda gradient is over. the lamda_new of z: %d is in the up. And the lamda_new(%d,%d) is zero\n',o,z,p,p);%¼ì²âÊÇpÎªºÎÖµÊ±£¬ÈÃlamda_newÖĞ³öÏÖ0µÄ
+        fprintf('Now the time of mlt_lamda_update_new is : %d ; and the loop of all lamda gradient is over. the lamda_new of z: %d is in the up. And the lamda_new(%d,%d) is zero\n',o,z,p,p);%æ£€æµ‹æ˜¯pä¸ºä½•å€¼æ—¶ï¼Œè®©lamda_newä¸­å‡ºç°0çš„
     end
 
 end
 end
 
 function gradient_lamda_p = mlt_gradientcalu_new(X,lamda_new,Y,p,A,alpha,belta,M,N,A_i_X_i,x_kj_minus_sigma_lamda_A_ik_X_ij)
-%¶ÔÓÚlamda_jÇóµ¼µÄº¯Êı
-%X´ú±íÔ­Ê¼Êı¾İ¾ØÕó£¬lamda_new´ú±íÒª½øĞĞ¸üĞÂµÄlamda¾ØÕó£¬Y´ú±íÀ­ÆÕÀ­Ë¹¾ØÕóÓëX¡¢X^T¾ØÕóµÄ³Ë»ı,j´ú±íÒª¸üĞÂµÄlamdaµÄĞòºÅ£¬A´ú±íÏµÊı¾ØÕó
-gradient_lamda_p = 2*belta*Y(p,p)*lamda_new(p,p);%ÏÈ¼ÓÉÏºóÃæbelta * Y_pp *lamda_p^2µÄ¹ØÓÚlamda_pµ¼Êı
+
+gradient_lamda_p = 2*belta*Y(p,p)*lamda_new(p,p);
 [N,M] = size(X);
 
-%·Ö±ğÓÃX¾ØÕóµÄµÚiĞĞĞĞÏòÁ¿µÄ×ªÖÃºÍA¾ØÕóµÄµÚiĞĞĞĞÏòÁ¿Ïà³Ë£¬µÃÒ»¸öM*NµÄ¾ØÕó£¬
-%¾ØÕóÖĞµÄÔªËØÎª(x_i_1*a_i_1, x_i_1*a_i_2, x_i_1*a_i_3, ¡­¡­ , x_i_1*a_i_n; x_i_2*a_i_1, x_i_2*a_i_2, ¡­¡­, x_i_2*a_i_n; ¡­¡­¡­¡­; x_i_m*a_i_1,x_i_m*a_i_2,¡­¡­ ,x_i_m*a_i_n)
-%Ôò¶ÔÓÚµÚiĞĞµÄX¾ØÕóÓëA¾ØÕóµÄÔªËØ³Ë»ı¿ÉÒÔ´ÓÕâN¸öM*NµÄ¾ØÕóÖĞËùÈ¡µÃ£¬Ö»Òª´æ´¢ÏÂÕâN¸ö¾ØÕó£¬±ã¿ÉÒÔ´ÓÖĞÈ¡³öÔªËØÀ´´úÌæÃ¿´ÎĞèÒª³Ë³öA(i,k)*X(i,j)
-%Í¬Àí£¬ÔÙÔÚA¾ØÕóµÄµÚiĞĞĞĞÏòÁ¿ºÍX¾ØÕóµÄµÚiĞĞĞĞÏòÁ¿µÄ×ªÖÃ³Ë³öµÄ¾ØÕóÇ°Ãæ³ËÉÏlamda_i£¬µÃN¸ö¾ØÕó£¬±ã¿ÉÒÔlamda_new(i,i)*A(i,k)*X(i,j)Ò²²»ÓÃÃ¿´ÎËã³ö£¬¶ø´Ó¾ØÕóÖĞÈ¡³öÔªËØ¼´¿É¡£
-%lamda_x_a¾ØÕóÎª£¨lamda_i*x_i_1*a_i_1,lamda_i*x_i_1*a_i_2,¡­¡­,lamda_i*x_i_1*a_i_n;lamda_i*x_i_2*a_i_1,lamda_i*x_i_2*a_i_2,¡­¡­,lamda_i*x_i_2*a_i_n; ¡­¡­¡­¡­ ; lamda_i*x_i_m*a_i_1,lamda_i*x_i_m*a_i_2,¡­¡­lamda_i*x_i_m*a_i_n£©
 
-%¶ÔÓÚA_i_X_i¾ØÕóÏòÁ¿µÄÇó½â£¬ÒòÎªAºÍX¶¼ÊÇ¹Ì¶¨µÄ£¬ËùÒÔ·ÅÔÚmlt_lamda_updateº¯ÊıÖĞ£¬²¢°Ñ½á¹û´«Èëmlt_gradientcaluº¯ÊıÖĞ£¬¶ø²»ÓÃÃ¿´Î¶¼ÖØ¸´¼ÆËãÁË
-% A_i_X_i = cell(1,N);%´´½¨¿ÕµÄÔªÏ¸°ûÊı×é£¬À´´æ´¢N¸ö¾ØÕó£¬£¨XµÄµÚiĞĞµÄ×ªÖÃÓëAµÄµÚiĞĞÏà³ËËùµÃµÄ¾ØÕó£©
+
+
+% A_i_X_i = cell(1,N);
 % for i=1:N
     % A_i_X_i{1,i}= X(i,:)' * A(i,:);
 % end
 
-% lamda_i_A_i_X_i = cell(1,N);%´´½¨¿ÕµÄÔªÏ¸°ûÊı×é£¬À´´æ´¢N¸ö¾ØÕó£¬£¨XµÄµÚiĞĞµÄ×ªÖÃÓëAµÄµÚiĞĞÏà³ËËùµÃµÄ¾ØÕó£¬ÔÙÓëlamda_i£¨¼´lamda_new(i,i)£©Ïà³ËËùµÃ¾ØÕó£©
+% lamda_i_A_i_X_i = cell(1,N);
 % for i=1:N
     % lamda_i_A_i_X_i{1,i} = lamda_new(i,i) * X(i,:)'*A(i,:);
 % end
