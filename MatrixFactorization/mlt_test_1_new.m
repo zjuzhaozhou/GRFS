@@ -1,28 +1,24 @@
 clear;
 load('COIL20.mat');
-nClass = length(unique(gnd));%ÔònClassÎª20
+nClass = length(unique(gnd));%åˆ™nClassä¸º20
 
 
-%Normalize each data vector to have L2-norm equal to 1 
-%¶ÔÓÚCOIL20.matÖĞµÄfeaÎªÒ»¸ö1440*1024µÄ¾ØÕó£¬ÆäÖĞÃ¿Ò»ĞĞÎªÒ»¸öÊı¾İ£¬Ã¿Ò»ÁĞÎªÒ»¸öfeature£¬ËùÒÔµ±×÷ÎÒÃÇµÄº¯ÊıÖĞµÄX£¬feaĞèÒªÏÈ×ªÖÃ
-%¶ÔÓÚµÚÒ»´Î£¬ÏÈÁîbeltaÎª0£¬²»¿¼ÂÇL¾ØÕó£¬ÔòL¾ØÕóËæÒârandÒ»¸öM*MµÄ£¬£¨MÎª1440£©
-%·µ»Ø×Ô¼ºËùÕÒµÄĞÂlamdaÖ®ºó£¬ÓÃĞÂµÄlamdaÖĞÕÒ×î´óµÄÇ°100¸ö×÷ÎªXËùÑ¡È¡µÄfeature£¬È¡ÕâĞ©ÁĞ×÷ÎªËùÒªÑ¡È¡µÄXµÄÁĞ£¬¹¹³ÉÒ»¸öĞÂµÄ1440*100µÄ¾ØÕó£¬ĞÎ³ÉĞÂµÄfea,ÊäÈëµ½ÏÂÃæµÄNormalizeFeaÖĞ¡£?
+
 L = zeros(1440,1440);
 alpha = 0.01;
-belta = 0;%ÏÈ²»¿¼ÂÇÀ­ÆÕÀ­Ë¹¾ØÕó
-epsilon = 0.1;%Öğ½¥µ÷ÕûepsilonµÄÖµ
+belta = 0;
+epsilon = 0.1;
 lamda_last = mlt_main_function_new(fea',L,alpha,belta,epsilon);
 
-%ÔÚÇó³ölamda_newÖ®ºó£¬ÒªÔÚlamda_newµÄ¶Ô½ÇÏßÔªËØÉÏÃæÕÒ×î´óµÄÔªËØ£¬×÷ÎªËùÑ¡ÔñµÄfeatureµÄ´úºÅ
-%ÏÈ°Ñlamda_lastÖĞµÄ¶Ô½ÇÏßÔªËØÅÅÁĞ³ÉĞĞÏòÁ¿
+
 lamda_last_row = zeros(1,1024);
 for i = 1:1024
 lamda_last_row(1,i) = lamda_last(i,i);
 end
 
-%È»ºóÌô³ölamda_last_rowÖĞ×î´óµÄÇ°100¸öÔªËØ£¬ÏÈ¶ÔÓÚlamda_row_last_rowÉıĞòÅÅĞò£¬²¢±£ÁôÆäÔ­Ê¼ĞòºÅÔÚindÏòÁ¿ÖĞ£¬ÔÚÕÒ×î´ó£¨¼´¿¿ºó£©µÄ100¸öĞòºÅ
+
 [lamda_last_row_sort,ind] = sort(lamda_last_row);
-%È»ºóÕÒ³öindµÄºó100Î»µÄÖµ×÷ÎªfeaËùÒªÑ¡È¡µÄÁĞ£¬°ÑÕâĞ©ÁĞÈ¡³ö·ÅÈëÒ»¸öĞÂ¾ØÕó£¬¹¹³ÉĞÂµÄfea
+
 fea_new = zeros(1440,100);
 for r=1:100
     fea_new(:,ind(end-r+1)) = fea(:,ind(end-r+1));
