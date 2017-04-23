@@ -27,7 +27,7 @@ function lamda_0 = rand_lamda(N)
 lamda_rand_arrow = rand(N,1);
 lamda_0 = zeros(N);
 for i=1:N
-    lamda_0(i,i) = lamda_rand_arrow(i,1);%lamda为对角矩阵，对角线上的元素为介于0、1之间的值
+    lamda_0(i,i) = lamda_rand_arrow(i,1);
 end
 disp(lamda_0);
 end
