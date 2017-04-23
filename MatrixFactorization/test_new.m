@@ -1,6 +1,6 @@
 clear;
 load('COIL20.mat');
-nClass = length(unique(gnd));%则nClass为20
+nClass = length(unique(gnd));
 
 
 
@@ -8,7 +8,7 @@ L = zeros(1440,1440);
 alpha = 0.01;
 belta = 0;
 epsilon = 0.1;
-lamda_last = mlt_main_function_new(fea',L,alpha,belta,epsilon);
+lamda_last = main_function_new(fea',L,alpha,belta,epsilon);
 
 
 lamda_last_row = zeros(1,1024);
